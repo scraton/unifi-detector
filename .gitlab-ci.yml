@@ -1,0 +1,16 @@
+image: golang:alpine
+
+variables:
+  RELEASE_IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
+stages:
+  - release
+
+release_docker:
+  stage: release
+  image: docker:stable
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $RELEASE_IMAGE_TAG .
+  - docker push $RELEASE_IMAGE_TAG
