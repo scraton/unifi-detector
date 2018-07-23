@@ -1,0 +1,4 @@
+{
+  "go.testOnSave": true,
+  "go.gopath": "${workspaceRoot}"
+}

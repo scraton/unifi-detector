@@ -1,0 +1,10 @@
+.DS_Store
+
+bin
+dist
+pkg
+
+src/*
+!src/git.home.lan/scraton
+
+debug

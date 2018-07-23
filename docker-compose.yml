@@ -1,0 +1,16 @@
+version: "3"
+services:   
+  unifi-detector:
+    image: unifi-detector
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    command: -logtostderr=true
+    networks:
+      - unifi-detectornet
+networks:
+  unifi-detectornet:
