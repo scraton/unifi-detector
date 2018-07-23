@@ -20,7 +20,6 @@ clean:
 .PHONY: install-build-deps
 install-build-deps:
 	# go get your app's functional dependencies here...
-	# eg: go get -u golang.org/x/net/context
 	go get -u github.com/sirupsen/logrus
 	go get -u github.com/mdlayher/unifi
 	go get -u github.com/muesli/cache2go
@@ -30,27 +29,17 @@ install-build-deps:
 install:
 	go install -ldflags $(LD_FLAGS) git.home.lan/scraton/unifi-detector
 
-.PHONY: dist-app
-dist-app:
-	GOOS=linux GOARCH=amd64 go build -a -o dist/$(APP_NAME) -ldflags $(LD_FLAGS) git.home.lan/scraton/unifi-detector
+.PHONY: build
+build:
+	go build -a -o dist/$(APP_NAME) -ldflags $(LD_FLAGS) git.home.lan/scraton/unifi-detector
 
-.PHONY: dist
-dist: dist-app
-	docker-compose build
-
-.PHONY: deploy-local
-deploy-local: dist
-	docker stack deploy -c docker-compose.yml unifi-detector
-
-.PHONY: run-local
-run-local:
-	docker-compose up
-
-.PHONY: clean-docker
-clean-docker:
-	docker stack rm unifi-detector
-	docker ps -a -f status=exited -q | xargs docker rm
-	docker images -f dangling=true -q | xargs docker rmi
+.PHONY: docker
+docker:
+	docker build \
+	  --build-arg BUILD_TIMESTAMP=$(TS) \
+	  --build-arg BUILD_VERSION=$(VERSION) \
+	  --build-arg BUILD_REVISION=$(COMMIT) \
+	  -t unifi-detector:latest .
 
 # Dev Tools list is per MS documentation here: https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on
 .PHONY: install-dev-tools
