@@ -4,7 +4,10 @@ bin
 dist
 pkg
 
+!src/
 src/*
-!src/git.home.lan/scraton
+!src/git.home.lan/
+src/git.home.lan/*
+!src/git.home.lan/scraton/
 
 debug
