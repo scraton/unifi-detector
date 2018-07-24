@@ -30,34 +30,29 @@ docker container run unifi-detector:latest
 
 ## Usage
 
+Here is the most basic example providing just the required fields:
+
 ```bash
-$ unifi-detector -h
-Usage of ./bin/unifi-detector:
-  -api-address string
-    	Unifi Controller address
-  -api-insecure
-    	Allow insecure connection to Unifi Controller
-  -api-password string
-    	Unifi Controller password
-  -api-timeout int
-    	Timeout for connecting to Unfi Controller (default 60)
-  -api-user string
-    	Unifi Controller username
-  -interval int
-    	Scan interval in seconds (default 60)
-  -lifespan int
-    	Client cache lifespan in seconds (default 3600)
-  -mqtt-address string
-    	MQTT broker address
-  -mqtt-password string
-    	MQTT broker password
-  -mqtt-topic string
-    	MQTT broker topic
-  -mqtt-user string
-    	MQTT broker username
+unifi-detector -api-address="https://unifi:8443" -mqtt-address="tcp://mosquitto:1883" -mqtt-topic "unifi/network/detector"
 ```
 
-It is recommended you use a read only account for the UniFi API.
+Although most of the time you will be dealing with self signed certificates and username/password combinations. You can specify all of this on the command line, or use environment variables. It is recommended to use a read only account for the UniFi API.
+
+```bash
+export UNIFI_API_PASSWORD=secret
+export UNIFI_MQTT_PASSWORD=secret
+
+unifi-detector -api-address="https://unifi:8443" \
+               -api-username="detector" \
+               -api-insecure \
+               -mqtt-address="tcp://mosquitto:1883" \
+               -mqtt-username="detector" \
+               -mqtt-topic "unifi/network/detector"
+```
+
+All command line flags can be specified in the environment. Just prefix with `UNIFI_` and replace `-` with `_`.
+
+You can use `unifi-detector -h` to get a full summary of available command parameters.
 
 ## Development
 
