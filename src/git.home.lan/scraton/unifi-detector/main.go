@@ -241,7 +241,7 @@ func main() {
 	cache := newCache("unifi_clients")
 	client, err := newClient(clientConfig)
 	if err != nil {
-		log.Fatalf("failed to create cache: %v", err)
+		log.Fatalf("failed to connect to UniFi: %v", err)
 		os.Exit(1)
 	} else {
 		log.Infof("successfully connected to UniFi at %v", clientConfig.address)
