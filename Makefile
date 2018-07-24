@@ -14,7 +14,7 @@ PATH := $(PATH):$(GOPATH)/bin
 
 all: deps build
 build:
-	go build -a -o bin/$(APP_NAME) -ldflags $(LD_FLAGS) -v $(SRCDIR)
+	go build -a -o bin/$(APP_NAME) -ldflags $(LD_FLAGS) $(SRCDIR)
 build-linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags $(LD_FLAGS) -o $(APP_NAME) $(SRCDIR)
 build-docker:
@@ -29,6 +29,7 @@ deps:
 	go get -u github.com/mdlayher/unifi
 	go get -u github.com/muesli/cache2go
 	go get -u github.com/namsral/flag
+	go get -u github.com/eclipse/paho.mqtt.golang
 
 # Dev Tools list is per MS documentation here: https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on
 dev:
