@@ -15,14 +15,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Config provides program configuration
-type Config struct {
+type appConfig struct {
 	scanInterval   time.Duration
 	clientLifespan time.Duration
 }
 
-// UnifiConfig provides authentication information for the UniFi controller
-type UnifiConfig struct {
+type unifiConfig struct {
 	address  string
 	username string
 	password string
@@ -30,8 +28,7 @@ type UnifiConfig struct {
 	timeout  time.Duration
 }
 
-// MqttConfig provides authentication information for the MQTT client
-type MqttConfig struct {
+type mqttConfig struct {
 	address  string
 	username string
 	password string
@@ -59,7 +56,7 @@ func newCache(name string) *cache2go.CacheTable {
 	return cache2go.Cache(name)
 }
 
-func newClient(config UnifiConfig) (*unifi.Client, error) {
+func newClient(config *unifiConfig) (*unifi.Client, error) {
 	httpClient := &http.Client{Timeout: config.timeout}
 	if config.insecure {
 		httpClient = unifi.InsecureHTTPClient(config.timeout)
@@ -78,17 +75,17 @@ func newClient(config UnifiConfig) (*unifi.Client, error) {
 	return client, err
 }
 
-func pollClients(config *Config, unifiClient *unifi.Client, mqtt *MqttConfig, cache *cache2go.CacheTable) {
+func pollClients(config *appConfig, unifiClient *unifi.Client, mqtt *mqttConfig, cache *cache2go.CacheTable) {
 	for range time.Tick(config.scanInterval) {
 		go evaluateClients(config, unifiClient, cache, mqtt, false)
 	}
 }
 
-func initializeClientsCache(config *Config, unifiClient *unifi.Client, mqtt *MqttConfig, cache *cache2go.CacheTable) {
+func initializeClientsCache(config *appConfig, unifiClient *unifi.Client, mqtt *mqttConfig, cache *cache2go.CacheTable) {
 	evaluateClients(config, unifiClient, cache, mqtt, true)
 }
 
-func notifyOfClient(client *unifi.Station, mqtt *MqttConfig) {
+func notifyOfClient(client *unifi.Station, mqtt *mqttConfig) {
 	clientMsg := &mqttClientMsg{
 		FirstSeen: client.FirstSeen,
 		LastSeen:  client.LastSeen,
@@ -106,7 +103,7 @@ func notifyOfClient(client *unifi.Station, mqtt *MqttConfig) {
 	log.Debugf("notified mqtt of client %v", client.MAC.String())
 }
 
-func evaluateClients(config *Config, unifiClient *unifi.Client, cache *cache2go.CacheTable, mqtt *MqttConfig, firstRun bool) {
+func evaluateClients(config *appConfig, unifiClient *unifi.Client, cache *cache2go.CacheTable, mqtt *mqttConfig, firstRun bool) {
 	clients, err := unifiClient.Stations("default")
 	if err != nil {
 		log.Errorf("failed to fetch clients: %v\n", err)
@@ -172,12 +169,12 @@ var (
 
 func main() {
 	var (
-		config         Config
+		config         appConfig
 		configLifespan int
 		configInterval int
 		clientTimeout  int
-		clientConfig   UnifiConfig
-		mqttConfig     MqttConfig
+		clientConfig   unifiConfig
+		mqttConfig     mqttConfig
 		mqttQos        int
 	)
 
@@ -239,7 +236,9 @@ func main() {
 
 	// initialize cache
 	cache := newCache("unifi_clients")
-	client, err := newClient(clientConfig)
+
+	// initialize unifi client
+	client, err := newClient(&clientConfig)
 	if err != nil {
 		log.Fatalf("failed to connect to UniFi: %v", err)
 		os.Exit(1)
