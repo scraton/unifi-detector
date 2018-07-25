@@ -1,6 +1,1 @@
-dist
-bin
-pkg
-src
-!src/git.home.lan/scraton/unifi-detector/
-README.md
+/unifi-detector
