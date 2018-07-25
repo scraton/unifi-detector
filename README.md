@@ -1,5 +1,5 @@
-go-unifi-detector
-=================
+unifi-detector
+==============
 
 Detect new clients on a UniFi network and report changes to an MQTT topic.
 
@@ -12,20 +12,18 @@ I have found this useful for both home automation and some very basic security a
 Choose one of the following options:
 
 ```bash
-go get -u github.com/scraton/go-unifi-detector
-
-# ...or...
-
-git clone github.com/scraton/go-unifi-detector
-cd go-unifi-detector
-make
-
-# ...or...
-
-git clone github.com/scraton/go-unifi-detector
-cd go-unifi-detector
+git clone github.com/scraton/unifi-detector
+cd unifi-detector
 make build-docker
-docker container run unifi-detector:latest 
+docker container run unifi-detector:latest
+
+# ...or...
+
+mkdir -p $GOPATH/src/github.com/scraton
+cd $GOPATH/src/github.com/scraton
+git clone github.com/scraton/unifi-detector
+cd unifi-detector
+make install
 ```
 
 ## Usage
@@ -57,7 +55,7 @@ You can use `unifi-detector -h` to get a full summary of available command param
 ## Development
 
 ```bash
-git clone github.com/scraton/go-unifi-detector
-cd go-unifi-detector
+git clone github.com/scraton/unifi-detector
+cd unifi-detector
 make dev deps
 ```

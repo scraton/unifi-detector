@@ -1,29 +1,22 @@
-GOPATH := $(shell pwd)
-
-export GOPATH
-
-APP_NAME=unifi-detector
-VERSION=1.0.0
-COMMIT=$(shell git rev-parse --short HEAD || echo '0000000')
-TS=$(shell date -u +%Y-%m-%dT%H%M%S)
-SRCDIR="git.home.lan/scraton/unifi-detector"
-
-LD_FLAGS="-X main.programName=$(APP_NAME) -X main.buildTimestamp=$(TS) -X main.programVersion=$(VERSION) -X main.gitCommit=$(COMMIT)"
-
-PATH := $(PATH):$(GOPATH)/bin
+BINARY=unifi-detector
+PKG=github.com/scraton/unifi-detector
+VERSION=$(shell git describe --tags --always --dirty)
+LD_FLAGS="-X main.programVersion=$(VERSION)"
 
 all: deps build
 build:
-	go build -a -o bin/$(APP_NAME) -ldflags $(LD_FLAGS) $(SRCDIR)
+	go build -a -ldflags $(LD_FLAGS) ./...
 build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags $(LD_FLAGS) -o $(APP_NAME) $(SRCDIR)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags $(LD_FLAGS) -o $(BINARY) ./...
 build-docker:
 	docker build -t unifi-detector:latest .
+install: all
+	sudo mv unifi-detector /usr/local/bin/unifi-detector
 clean:
 	go clean -x
-	rm -f bin/$(APP_NAME)
+	rm -f bin/$(BINARY)
 run:
-	./bin/$(APP_NAME)
+	./bin/$(BINARY)
 deps:
 	go get -u github.com/sirupsen/logrus
 	go get -u github.com/mdlayher/unifi

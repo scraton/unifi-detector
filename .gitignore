@@ -1,13 +1,2 @@
 .DS_Store
-
-bin
-dist
-pkg
-
-!src/
-src/*
-!src/git.home.lan/
-src/git.home.lan/*
-!src/git.home.lan/scraton/
-
-debug
+/unifi-detector

@@ -8,12 +8,16 @@ import (
 	"os"
 	"time"
 
-	"github.com/eclipse/paho.mqtt.golang"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/mdlayher/unifi"
 	"github.com/muesli/cache2go"
 	flag "github.com/namsral/flag"
 	log "github.com/sirupsen/logrus"
 )
+
+const programName = "unifi-detector"
+
+var programVersion string
 
 type appConfig struct {
 	scanInterval   time.Duration
@@ -159,14 +163,6 @@ func evaluateClients(config *appConfig, unifiClient *unifi.Client, cache *cache2
 	}
 }
 
-var (
-	programName    string
-	programVersion string
-	gitCommit      string
-	buildTimestamp string
-	printVersion   bool
-)
-
 func main() {
 	var (
 		config         appConfig
@@ -176,6 +172,7 @@ func main() {
 		clientConfig   unifiConfig
 		mqttConfig     mqttConfig
 		mqttQos        int
+		printVersion   bool
 	)
 
 	fs := flag.NewFlagSetWithEnvPrefix(os.Args[0], "UNIFI", 0)
@@ -209,6 +206,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	versionString := fmt.Sprintf("%v version:%s", programName, programVersion)
+	if printVersion {
+		fmt.Println(versionString)
+		os.Exit(0)
+	}
+
 	if clientConfig.address == "" {
 		log.Fatal("hostname for Unifi Controller must be set")
 	}
@@ -225,12 +228,6 @@ func main() {
 	config.clientLifespan = time.Duration(configLifespan) * time.Second
 	clientConfig.timeout = time.Duration(clientTimeout) * time.Second
 	mqttConfig.qos = byte(mqttQos)
-
-	versionString := fmt.Sprintf("%s version:%s commit:%s timestamp:%s", programName, programVersion, gitCommit, buildTimestamp)
-	if printVersion {
-		fmt.Println(versionString)
-		os.Exit(0)
-	}
 
 	log.Info(versionString)
 
