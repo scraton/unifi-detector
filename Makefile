@@ -9,7 +9,7 @@ build:
 build-linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags $(LD_FLAGS) -o $(BINARY) ./...
 build-docker:
-	docker build -t unifi-detector:latest .
+	docker build -t unifi-detector:$(VERSION) .
 install: all
 	sudo mv unifi-detector /usr/local/bin/unifi-detector
 clean:
