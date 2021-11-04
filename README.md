@@ -19,8 +19,6 @@ docker container run unifi-detector:latest
 
 # ...or...
 
-mkdir -p $GOPATH/src/github.com/scraton
-cd $GOPATH/src/github.com/scraton
 git clone github.com/scraton/unifi-detector
 cd unifi-detector
 make install
@@ -51,11 +49,3 @@ unifi-detector -api-address="https://unifi:8443" \
 All command line flags can be specified in the environment. Just prefix with `UNIFI_` and replace `-` with `_`.
 
 You can use `unifi-detector -h` to get a full summary of available command parameters.
-
-## Development
-
-```bash
-git clone github.com/scraton/unifi-detector
-cd unifi-detector
-make dev deps
-```

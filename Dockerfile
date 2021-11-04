@@ -1,17 +1,16 @@
 # build
-FROM golang:alpine AS build
+FROM golang:1.17.2-alpine3.14 AS build
 WORKDIR /app
-RUN apk --no-cache add -t build-deps build-base make git curl \
- && apk --no-cache add ca-certificates
+RUN apk --no-cache add -t build-deps build-base make git curl ca-certificates
 
-COPY Makefile .
-RUN make deps
+COPY go.mod go.sum ./
+RUN go mod download
+
 COPY . .
-RUN make build-linux
+RUN make build
 
 # runtime
-FROM alpine
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /app/unifi-detector .
-ENV PATH /
-CMD ["/unifi-detector"]
+FROM alpine:3.14
+RUN apk --no-cache add ca-certificates
+COPY --from=build /app/bin/unifi-detector /usr/local/bin/unifi-detector
+CMD ["unifi-detector"]
